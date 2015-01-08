@@ -2,11 +2,7 @@
 
 namespace Chromabits\TutumClient\Console\Commands;
 
-use Chromabits\TutumClient\Cache\TutumRedisPoolFinder;
-use Chromabits\TutumClient\Client;
-use Chromabits\TutumClient\Support\EnvUtils;
 use Exception;
-use Illuminate\Cache\StoreInterface;
 use Illuminate\Console\Command;
 
 /**
@@ -17,11 +13,15 @@ use Illuminate\Console\Command;
 class TutumRedisRefreshCommand extends Command
 {
     /**
+     * Name of the command
+     *
      * @var string
      */
     protected $name = 'tutum:redis:refresh';
 
     /**
+     * Description of the command
+     *
      * @var string
      */
     protected $description = 'Refresh available Redis connections from the Tutum API';

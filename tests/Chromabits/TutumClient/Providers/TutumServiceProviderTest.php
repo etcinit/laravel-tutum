@@ -2,6 +2,7 @@
 
 namespace Chromabits\Tests\TutumClient\Providers;
 
+use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Client;
 use Chromabits\TutumClient\Providers\TutumServiceProvider;
 use GuzzleHttp\Client as HttpClient;
@@ -9,33 +10,14 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\Mock;
 use Mockery as m;
-use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 
+/**
+ * Class TutumServiceProviderTest
+ *
+ * @package Chromabits\Tests\TutumClient\Providers
+ */
 class TutumServiceProviderTest extends TestCase
 {
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->app['config']->set('tutum', [
-            'username' => 'testing',
-
-            'apikey' => 'keykey',
-
-            'redis' => [
-                'service' => 'redis',
-
-                'password' => 'secret'
-            ]
-        ]);
-
-        $this->app['config']->set('cache.stores.tutum', [
-            'driver' => 'tutum_redis'
-        ]);
-
-        putenv('TUTUM_CONTAINER_API_URL=/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640');
-    }
-
     public function testRegister()
     {
         $provider = new TutumServiceProvider($this->app);
@@ -49,6 +31,26 @@ class TutumServiceProviderTest extends TestCase
             'Chromabits\TutumClient\Interfaces\ClientInterface',
             $this->app->make('Chromabits\TutumClient\Interfaces\ClientInterface')
         );
+    }
+
+    public function testRegisterWith()
+    {
+        $provider = new TutumServiceProvider($this->app);
+
+        $provider->register();
+
+        putenv('TUTUM_AUTH=Bearer somekey');
+
+        $client = $this->app->make('Chromabits\TutumClient\Interfaces\ClientInterface');
+
+        $this->assertInstanceOf(
+            'Chromabits\TutumClient\Interfaces\ClientInterface',
+            $client
+        );
+
+        $this->assertEquals('somekey', $client->getBearerKey());
+
+        putenv('TUTUM_AUTH');
     }
 
     /**
@@ -89,6 +91,10 @@ class TutumServiceProviderTest extends TestCase
 
         $provider->boot();
 
+        $this->app['config']->set('cache.stores.tutumredisconfig', [
+            'driver' => 'array'
+        ]);
+
         $finder = $this->app->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
 
         $finder->refresh();
@@ -120,5 +126,35 @@ class TutumServiceProviderTest extends TestCase
         $client->getEmitter()->attach($mock);
 
         return $client;
+    }
+
+    public function testProvides()
+    {
+        $provider = new TutumServiceProvider($this->app);
+
+        $this->assertInternalType('array', $provider->provides());
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->app['config']->set('tutum', [
+            'username' => 'testing',
+
+            'apikey' => 'keykey',
+
+            'redis' => [
+                'service' => 'redis',
+
+                'password' => 'secret'
+            ]
+        ]);
+
+        $this->app['config']->set('cache.stores.tutum', [
+            'driver' => 'tutum_redis'
+        ]);
+
+        putenv('TUTUM_CONTAINER_API_URL=/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640');
     }
 }

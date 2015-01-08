@@ -58,6 +58,20 @@ class TutumRedisPool
     }
 
     /**
+     * Create an instance of the Redis cache driver.
+     *
+     * @param array $config
+     * @return RedisStore
+     * @throws Exception
+     */
+    public function createRedisDriver(array $config)
+    {
+        $redis = new Database($this->getRedisConnections());
+
+        return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
+    }
+
+    /**
      * Builds a cluster configuration for a Redis client using links discovered on Tutum's API
      *
      * @return array
@@ -75,7 +89,7 @@ class TutumRedisPool
             $pool = $this->store->get('redis_pool');
 
             /** @var ContainerLink $link */
-            foreach($pool as $link) {
+            foreach ($pool as $link) {
                 $endpoints = array_values($link->getEndpointsAsUrls());
 
                 $endpoint = $endpoints[0];
@@ -102,17 +116,24 @@ class TutumRedisPool
     }
 
     /**
-     * Create an instance of the Redis cache driver.
+     * Create a new cache repository with the given implementation.
      *
-     * @param array $config
-     * @return RedisStore
-     * @throws Exception
+     * From: Illuminate\Cache\CacheManager
+     *
+     * @param  \Illuminate\Cache\StoreInterface $store
+     * @return \Illuminate\Cache\Repository
      */
-    public function createRedisDriver(array $config)
+    protected function repository(StoreInterface $store)
     {
-        $redis = new Database($this->getRedisConnections());
+        $repository = new Repository($store);
 
-        return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
+        if ($this->app->bound('Illuminate\Contracts\Events\Dispatcher')) {
+            $repository->setEventDispatcher(
+                $this->app['Illuminate\Contracts\Events\Dispatcher']
+            );
+        }
+
+        return $repository;
     }
 
     /**
@@ -120,33 +141,11 @@ class TutumRedisPool
      *
      * From: Illuminate\Cache\CacheManager
      *
-     * @param  array  $config
+     * @param  array $config
      * @return string
      */
     protected function getPrefix(array $config)
     {
         return array_get($config, 'prefix') ?: $this->app['config']['cache.prefix'];
-    }
-
-    /**
-     * Create a new cache repository with the given implementation.
-     *
-     * From: Illuminate\Cache\CacheManager
-     *
-     * @param  \Illuminate\Cache\StoreInterface  $store
-     * @return \Illuminate\Cache\Repository
-     */
-    protected function repository(StoreInterface $store)
-    {
-        $repository = new Repository($store);
-
-        if ($this->app->bound('Illuminate\Contracts\Events\Dispatcher'))
-        {
-            $repository->setEventDispatcher(
-                $this->app['Illuminate\Contracts\Events\Dispatcher']
-            );
-        }
-
-        return $repository;
     }
 }

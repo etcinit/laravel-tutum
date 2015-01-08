@@ -45,7 +45,8 @@ class TutumRedisPoolFinder
     }
 
     /**
-     * Get
+     * Get container links
+     *
      * @return \Chromabits\TutumClient\Entities\ContainerLink[]
      * @throws Exception
      */
