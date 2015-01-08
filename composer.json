@@ -20,5 +20,10 @@
             "Chromabits\\TutumClient\\": "src/Chromabits/TutumClient/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Chromabits\\Tests\\": "tests/Chromabits/"
+        }
+    },
     "minimum-stability": "dev"
 }

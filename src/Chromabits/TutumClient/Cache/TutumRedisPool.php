@@ -72,11 +72,13 @@ class TutumRedisPool
         // Check that there is an array of ContainerLinks in the local Tutum cache
         // If there is, we will use it to build a cluster connection
         if ($this->store->get('redis_pool')) {
-            $pool = $this->store->get('redis_link_pool');
+            $pool = $this->store->get('redis_pool');
 
             /** @var ContainerLink $link */
             foreach($pool as $link) {
-                $endpoint = $link->getEndpointsAsUrls()[0];
+                $endpoints = array_values($link->getEndpointsAsUrls());
+
+                $endpoint = $endpoints[0];
 
                 $connection = [
                     'host' => $endpoint->getHost(),

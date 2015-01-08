@@ -1,0 +1,22 @@
+{
+  "unique_name": "laravel-1",
+  "uuid": "c1dd4e1e-1356-411c-8613-e15146633640",
+  "linked_to_container": [
+    {
+      "endpoints": {
+        "6380/tcp": "tcp://172.16.0.3:6380"
+      },
+      "from_container": "/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640/",
+      "name": "REDIS_1",
+      "to_container": "/api/v1/container/ba434e1e-1234-411c-8613-e15146633640/"
+    },
+    {
+      "endpoints": {
+        "6380/tcp": "tcp://172.16.0.4:6380"
+      },
+      "from_container": "/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640/",
+      "name": "REDIS_2",
+      "to_container": "/api/v1/container/ba434e1e-1237-411c-8613-e15146633640/"
+    }
+  ]
+}

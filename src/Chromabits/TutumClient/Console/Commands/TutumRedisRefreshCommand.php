@@ -2,6 +2,7 @@
 
 namespace Chromabits\TutumClient\Console\Commands;
 
+use Chromabits\TutumClient\Cache\TutumRedisPoolFinder;
 use Chromabits\TutumClient\Client;
 use Chromabits\TutumClient\Support\EnvUtils;
 use Exception;
@@ -34,43 +35,10 @@ class TutumRedisRefreshCommand extends Command
     {
         $this->line('Discovering Redis links from Tutum API...');
 
-        $links = $this->fetchLinks();
+        $finder = $this->getLaravel()->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
 
-        /** @var StoreInterface $cache */
-        $cache = $this->getLaravel()['cache']->store('tutumredisconfig');
-
-        $cache->forever('redis_pool', $links);
+        $finder->refresh();
 
         $this->line('Stored discovered links in cache');
-    }
-
-    /**
-     * Get
-     * @return \Chromabits\TutumClient\Entities\ContainerLink[]
-     * @throws Exception
-     */
-    protected function fetchLinks()
-    {
-        $app = $this->getLaravel();
-
-        /** @var Client $client */
-        $client = $app->make('Chromabits\TutumClient\Interfaces\ClientInterface');
-
-        $envUtils = new EnvUtils();
-
-        // Check that we have access to the container UUID
-        if (!$envUtils->hasContainerUuid()) {
-            throw new Exception('Unable to fetch container UUID. Unable to find Redis links');
-        }
-
-        // Check that the service name is setup
-        if (!$app['config']->has('tutum.redis.service')) {
-            throw new Exception('Tutum Redis service name is not set. Unable to find Redis links');
-        }
-
-        // Fetch current container information
-        $container = $client->container->show($envUtils->getContainerUuid())->get();
-
-        return $container->findLinks($app['config']['tutum.redis.service']);
     }
 }
