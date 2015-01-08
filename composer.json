@@ -15,5 +15,10 @@
             "email": "ed@chromabits.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Chromabits\\TutumClient\\": "src/Chromabits/TutumClient/"
+        }
+    },
     "minimum-stability": "dev"
 }
