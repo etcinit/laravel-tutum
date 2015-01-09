@@ -19,6 +19,11 @@ return [
         'service' => 'redis',
 
         // Redis server password
-        'password' => 'XXXXXXXXXXXXXXXX'
+        'password' => 'XXXXXXXXXXXXXXXX',
+
+        // How frequent we should refresh the server pool
+        // info from Tutum's API. This requires the schedule
+        // service provider to be setup
+        'frequency' => 'ten'
     ]
 ];
