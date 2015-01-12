@@ -9,6 +9,11 @@ use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\StoreInterface;
 use Illuminate\Contracts\Foundation\Application;
 
+/**
+ * Class TutumRedisPoolFinder
+ *
+ * @package Chromabits\TutumClient\Cache
+ */
 class TutumRedisPoolFinder
 {
     /**
@@ -34,6 +39,12 @@ class TutumRedisPoolFinder
         $this->cacheManager = $cacheManager;
     }
 
+    /**
+     * Refresh container Redis links
+     *
+     * @return \Chromabits\TutumClient\Entities\ContainerLink[]
+     * @throws Exception
+     */
     public function refresh()
     {
         $links = $this->fetch();
@@ -42,6 +53,8 @@ class TutumRedisPoolFinder
         $cache = $this->cacheManager->store('tutumredisconfig');
 
         $cache->forever('redis_pool', $links);
+
+        return $links;
     }
 
     /**

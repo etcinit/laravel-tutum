@@ -2,6 +2,7 @@
 
 namespace Chromabits\TutumClient\Console\Commands;
 
+use Chromabits\TutumClient\Entities\ContainerLink;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -37,7 +38,14 @@ class TutumRedisRefreshCommand extends Command
 
         $finder = $this->getLaravel()->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
 
-        $finder->refresh();
+        $links = $finder->refresh();
+
+        /** @var ContainerLink $link */
+        foreach ($links as $link) {
+            $url = $link->getEndpointsAsUrls()[0];
+
+            $this->line('Found link: ' . $url->getHost() . ':' . $url->getPort());
+        }
 
         $this->line('Stored discovered links in cache');
     }
