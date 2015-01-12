@@ -3,6 +3,7 @@
 namespace Chromabits\TutumClient\Console\Commands;
 
 use Chromabits\TutumClient\Entities\ContainerLink;
+use Chromabits\TutumClient\Support\EnvUtils;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -36,7 +37,11 @@ class TutumRedisRefreshCommand extends Command
     {
         $this->line('Discovering Redis links from Tutum API...');
 
+        $envUtils = new EnvUtils();
+
         $finder = $this->getLaravel()->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
+
+        $this->line('Container UUID: ' . $envUtils->getContainerUuid());
 
         $links = $finder->refresh();
 
