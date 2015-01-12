@@ -40,11 +40,16 @@ class TutumRedisRefreshCommand extends Command
 
         $links = $finder->refresh();
 
-        /** @var ContainerLink $link */
-        foreach ($links as $link) {
-            $url = $link->getEndpointsAsUrls()[0];
+        if (is_array($links)) {
+            /** @var ContainerLink $link */
+            foreach ($links as $link) {
+                $urls = $link->getEndpointsAsUrls();
 
-            $this->line('Found link: ' . $url->getHost() . ':' . $url->getPort());
+                foreach ($urls as $url)
+                {
+                    $this->line('Found link: ' . $url->getHost() . ':' . $url->getPort());
+                }
+            }
         }
 
         $this->line('Stored discovered links in cache');
