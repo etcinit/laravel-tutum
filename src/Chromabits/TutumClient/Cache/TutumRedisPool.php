@@ -55,6 +55,8 @@ class TutumRedisPool
         $this->cache = $app['cache'];
 
         $this->store = $this->cache->store('tutumredisconfig');
+
+        $this->config = $app['config'];
     }
 
     /**
@@ -68,7 +70,8 @@ class TutumRedisPool
     {
         $redis = new Database($this->getRedisConnections());
 
-        return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
+        //return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
+        return $this->repository(new RedisStore($redis, '', 'default'));
     }
 
     /**
@@ -99,8 +102,8 @@ class TutumRedisPool
                     'port' => $endpoint->getPort()
                 ];
 
-                if ($this->app['config']->has('tutum.redis.password')) {
-                    $connection['password'] = $this->app['config']['tutum.redis.password'];
+                if ($this->config->has('tutum.redis.password')) {
+                    $connection['password'] = $this->config['tutum.redis.password'];
                 }
 
                 $connections[$link->getName()] = $connection;
@@ -146,6 +149,6 @@ class TutumRedisPool
      */
     protected function getPrefix(array $config)
     {
-        return array_get($config, 'prefix') ?: $this->app['config']['cache.prefix'];
+        return array_get($config, 'prefix') ?: $this->config['cache.prefix'];
     }
 }
