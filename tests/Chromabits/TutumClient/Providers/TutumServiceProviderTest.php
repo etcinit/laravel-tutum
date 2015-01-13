@@ -25,7 +25,6 @@ class TutumServiceProviderTest extends TestCase
         $provider->register();
 
         $this->assertTrue($this->app->bound('Chromabits\TutumClient\Interfaces\ClientInterface'));
-        $this->assertTrue($this->app->bound('Chromabits\TutumClient\Cache\TutumRedisPool'));
 
         $this->assertInstanceOf(
             'Chromabits\TutumClient\Interfaces\ClientInterface',
@@ -53,61 +52,9 @@ class TutumServiceProviderTest extends TestCase
         putenv('TUTUM_AUTH');
     }
 
-    /**
-     * @depends testRegister
-     */
-    public function testBoot()
-    {
-        $provider = new TutumServiceProvider($this->app);
-
-        $provider->register();
-        $provider->boot();
-
-        $this->assertTrue($this->app['config']->has('cache.stores.tutumredisconfig'));
-
-        $this->assertInstanceOf(
-            'Chromabits\TutumClient\Cache\TutumRedisPool',
-            $this->app->make('Chromabits\TutumClient\Cache\TutumRedisPool')
-        );
-    }
-
-    /**
-     * @depends testBoot
-     */
-    public function testRedisDriver()
-    {
-        $provider = new TutumServiceProvider($this->app);
-
-        $provider->register();
-
-        // Inject mock HTTP client
-        $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
-            $client = new Client('testing', 'testing');
-
-            $client->setHttpClient($this->makeMockClient());
-
-            return $client;
-        });
-
-        $provider->boot();
-
-        $this->app['config']->set('cache.stores.tutumredisconfig', [
-            'driver' => 'array'
-        ]);
-
-        $finder = $this->app->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
-
-        $finder->refresh();
-
-        $store = $this->app['cache']->store('tutum');
-
-        $this->assertInstanceOf('Illuminate\Cache\Repository', $store);
-    }
-
     protected function makeMockClient()
     {
         $client = new HttpClient();
-
 
         $responseBody = file_get_contents(base_path() . '/resources/testing/tutumContainerShowResponse.json');
 

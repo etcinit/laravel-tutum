@@ -28,12 +28,6 @@ class TutumServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Setup file cache store for redis server pool
-        $this->app['config']->set('cache.stores.tutumredisconfig', [
-            'driver' => 'file',
-            'path' => storage_path() . '/tutum/redis'
-        ]);
-
         $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
             // Get environment information
             $envUtils = new EnvUtils();
@@ -49,61 +43,6 @@ class TutumServiceProvider extends ServiceProvider
                 $app['config']->get('tutum.apikey')
             );
         });
-
-        $this->app->bind('Chromabits\TutumClient\Cache\TutumRedisPool', function ($app) {
-            return new TutumRedisPool($app);
-        });
-
-        $this->app->singleton('cache', function($app)
-        {
-            $manager =  new CacheManager($app);
-
-            $manager->extend('tutum_redis', function ($app, $config) {
-                return $app->make('Chromabits\TutumClient\Cache\TutumRedisPool')->createRedisDriver($config);
-            });
-
-            return $manager;
-        });
-
-        $this->app->singleton('cache.store', function($app)
-        {
-            return $app['cache']->driver();
-        });
-
-        $this->app->singleton('memcached.connector', function()
-        {
-            return new MemcachedConnector;
-        });
-
-        $this->registerCommands();
-    }
-
-    /**
-     * Boot the service provider
-     */
-    public function boot()
-    {
-
-    }
-
-    /**
-     * Register the cache related console commands.
-     *
-     * @return void
-     */
-    public function registerCommands()
-    {
-        $this->app->singleton('command.cache.clear', function($app)
-        {
-            return new ClearCommand($app['cache']);
-        });
-
-        $this->app->singleton('command.cache.table', function($app)
-        {
-            return new CacheTableCommand($app['files'], $app['composer']);
-        });
-
-        $this->commands('command.cache.clear', 'command.cache.table');
     }
 
     /**
@@ -114,9 +53,7 @@ class TutumServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'cache', 'cache.store', 'memcached.connector', 'command.cache.clear', 'command.cache.table',
-            'Chromabits\TutumClient\Interfaces\ClientInterface',
-            'Chromabits\TutumClient\Cache\TutumRedisPool'
+            'Chromabits\TutumClient\Interfaces\ClientInterface'
         ];
     }
 }

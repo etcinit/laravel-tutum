@@ -5,6 +5,9 @@ namespace Chromabits\Tests\TutumClient\Cache;
 use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Cache\TutumRedisPool;
 use Chromabits\TutumClient\Entities\ContainerLink;
+use Chromabits\TutumClient\Providers\CacheServiceProvider;
+use Illuminate\Config\Repository;
+use Illuminate\Foundation\Application;
 
 /**
  * Class TutumRedisPoolTest
@@ -69,5 +72,29 @@ class TutumRedisPoolTest extends TestCase
         $this->app['config']->set('cache.stores.tutumredisconfig', [
             'driver' => 'array'
         ]);
+
+        $this->app['config']->set('tutum.redis.password', 'xxxxxxxx');
+    }
+
+    /**
+     * Create an barebone Laravel application
+     */
+    protected function createApplication()
+    {
+        $this->app = new Application(__DIR__ . '/../../../../');
+
+        $this->app->instance('config', new Repository([]));
+
+        $this->app['config']->set('app', [
+            'providers' => [
+                'Illuminate\Cache\CacheServiceProvider',
+                'Illuminate\Redis\RedisServiceProvider',
+                'Illuminate\Filesystem\FilesystemServiceProvider',
+            ]
+        ]);
+
+        $this->app->registerConfiguredProviders();
+
+        $this->app->boot();
     }
 }

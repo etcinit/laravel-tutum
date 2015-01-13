@@ -39,9 +39,9 @@ class LaravelTestCase extends TestCase
 
         $this->app['config']->set('app', [
             'providers' => [
-                'Illuminate\Cache\CacheServiceProvider',
                 'Illuminate\Redis\RedisServiceProvider',
                 'Illuminate\Filesystem\FilesystemServiceProvider',
+                'Illuminate\Foundation\Providers\ConsoleSupportServiceProvider',
             ]
         ]);
 

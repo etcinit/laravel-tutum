@@ -6,6 +6,7 @@ use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Cache\TutumRedisPoolFinder;
 use Chromabits\TutumClient\Client;
 use Chromabits\TutumClient\Entities\ContainerLink;
+use Chromabits\TutumClient\Providers\CacheServiceProvider;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
@@ -133,5 +134,9 @@ class TutumRedisPoolFinderTest extends TestCase
         ]);
 
         putenv('TUTUM_CONTAINER_API_URL=/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640');
+
+        $cacheProvider = new CacheServiceProvider($this->app);
+
+        $cacheProvider->register();
     }
 }

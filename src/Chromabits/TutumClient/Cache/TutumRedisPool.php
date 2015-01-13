@@ -70,8 +70,7 @@ class TutumRedisPool
     {
         $redis = new Database($this->getRedisConnections());
 
-        //return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
-        return $this->repository(new RedisStore($redis, '', 'default'));
+        return $this->repository(new RedisStore($redis, $this->getPrefix($config), 'default'));
     }
 
     /**
