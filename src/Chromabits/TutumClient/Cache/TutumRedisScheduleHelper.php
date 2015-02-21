@@ -12,6 +12,7 @@ use Illuminate\Contracts\Config\Repository;
  * Helper class for defining the schedule for refreshing the redis server pool
  * from Tutum's API
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\TutumClient\Cache
  */
 class TutumRedisScheduleHelper
@@ -48,15 +49,18 @@ class TutumRedisScheduleHelper
     {
         $frequency = $this->config->get('tutum.redis.frequency', 'ten');
 
-        switch($frequency) {
+        switch ($frequency) {
             case 'five':
-                $this->schedule->command('tutum:redis:refresh')->everyFiveMinutes();
+                $this->schedule->command('tutum:redis:refresh')
+                    ->everyFiveMinutes();
                 break;
             case 'ten':
-                $this->schedule->command('tutum:redis:refresh')->everyTenMinutes();
+                $this->schedule->command('tutum:redis:refresh')
+                    ->everyTenMinutes();
                 break;
             case 'thirty':
-                $this->schedule->command('tutum:redis:refresh')->everyThirtyMinutes();
+                $this->schedule->command('tutum:redis:refresh')
+                    ->everyThirtyMinutes();
                 break;
             default:
                 throw new Exception('Unknown frequency');

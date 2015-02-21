@@ -1,13 +1,14 @@
 <?php
 
-namespace Chromabits\Tests\TutumClient\Providers;
+namespace Tests\Chromabits\TutumClient\Providers;
 
-use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Providers\RedisScheduleServiceProvider;
+use Tests\Chromabits\Support\LaravelTestCase as TestCase;
 
 /**
  * Class RedisScheduleServiceProviderTest
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\Tests\TutumClient\Providers
  */
 class RedisScheduleServiceProviderTest extends TestCase

@@ -18,6 +18,7 @@ use Illuminate\Support\ServiceProvider;
  * A Laravel CacheServiceProvider replacement which enables the use of Tutum
  * Redis drivers
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\TutumClient\Providers
  */
 class CacheServiceProvider extends ServiceProvider
@@ -35,44 +36,49 @@ class CacheServiceProvider extends ServiceProvider
             'path' => storage_path() . '/tutum/redis'
         ]);
 
-        $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
-            // Get environment information
-            $envUtils = new EnvUtils();
+        $this->app->bind(
+            'Chromabits\TutumClient\Interfaces\ClientInterface',
+            function ($app) {
+                // Get environment information
+                $envUtils = new EnvUtils();
 
-            // Check if we can build the client from the environment
-            if ($envUtils->hasBearerKey()) {
-                return (new ClientFactory())->makeFromEnvironment();
+                // Check if we can build the client from the environment
+                if ($envUtils->hasBearerKey()) {
+                    return (new ClientFactory())->makeFromEnvironment();
+                }
+
+                // Otherwise, default to creating a client from local config
+                return new Client(
+                    $app['config']->get('tutum.username'),
+                    $app['config']->get('tutum.apikey')
+                );
             }
+        );
 
-            // Otherwise, default to creating a client from local config
-            return new Client(
-                $app['config']->get('tutum.username'),
-                $app['config']->get('tutum.apikey')
-            );
-        });
+        $this->app->bind(
+            'Chromabits\TutumClient\Cache\TutumRedisPool',
+            function ($app) {
+                return new TutumRedisPool($app);
+            }
+        );
 
-        $this->app->bind('Chromabits\TutumClient\Cache\TutumRedisPool', function ($app) {
-            return new TutumRedisPool($app);
-        });
-
-        $this->app->singleton('cache', function($app)
-        {
-            $manager =  new CacheManager($app);
+        $this->app->singleton('cache', function ($app) {
+            $manager = new CacheManager($app);
 
             $manager->extend('tutum_redis', function ($app, $config) {
-                return $app->make('Chromabits\TutumClient\Cache\TutumRedisPool')->createRedisDriver($config);
+                return $app
+                    ->make('Chromabits\TutumClient\Cache\TutumRedisPool')
+                    ->createRedisDriver($config);
             });
 
             return $manager;
         });
 
-        $this->app->singleton('cache.store', function($app)
-        {
+        $this->app->singleton('cache.store', function ($app) {
             return $app['cache']->driver();
         });
 
-        $this->app->singleton('memcached.connector', function()
-        {
+        $this->app->singleton('memcached.connector', function () {
             return new MemcachedConnector;
         });
 
@@ -86,13 +92,11 @@ class CacheServiceProvider extends ServiceProvider
      */
     protected function registerCommands()
     {
-        $this->app->singleton('command.cache.clear', function($app)
-        {
+        $this->app->singleton('command.cache.clear', function ($app) {
             return new ClearCommand($app['cache']);
         });
 
-        $this->app->singleton('command.cache.table', function($app)
-        {
+        $this->app->singleton('command.cache.table', function ($app) {
             return new CacheTableCommand($app['files'], $app['composer']);
         });
 
@@ -107,7 +111,8 @@ class CacheServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'cache', 'cache.store', 'memcached.connector', 'command.cache.clear', 'command.cache.table',
+            'cache', 'cache.store', 'memcached.connector',
+            'command.cache.clear', 'command.cache.table',
             'Chromabits\TutumClient\Interfaces\ClientInterface',
             'Chromabits\TutumClient\Cache\TutumRedisPool'
         ];

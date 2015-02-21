@@ -3,8 +3,8 @@
 /**
  * Sample Tutum configuration
  *
- * Copy this file into your application's config directory
- * and modify it to match your configuration
+ * Copy this file into your application's config directory and modify it to
+ * match your configuration
  */
 return [
     // Username for key based authentication
@@ -21,9 +21,8 @@ return [
         // Redis server password
         'password' => 'XXXXXXXXXXXXXXXX',
 
-        // How frequent we should refresh the server pool
-        // info from Tutum's API. This requires the schedule
-        // service provider to be setup
+        // How frequent we should refresh the server pool info from Tutum's API.
+        // This requires the schedule service provider to be setup
         'frequency' => 'ten'
     ]
 ];

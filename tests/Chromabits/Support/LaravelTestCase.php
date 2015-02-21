@@ -1,6 +1,6 @@
 <?php
 
-namespace Chromabits\Tests\Support;
+namespace Tests\Chromabits\Support;
 
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
@@ -9,6 +9,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 /**
  * Class LaravelTestCase
  *
+ * Setups a micro Laravel application for running tests on
+ *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\Tests\Support
  */
 class LaravelTestCase extends TestCase
@@ -29,7 +32,7 @@ class LaravelTestCase extends TestCase
     }
 
     /**
-     * Create an barebone Laravel application
+     * Create an barebones Laravel application
      */
     protected function createApplication()
     {

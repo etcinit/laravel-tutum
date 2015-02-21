@@ -1,14 +1,15 @@
 <?php
 
-namespace Chromabits\Tests\TutumClient\Cache;
+namespace Tests\Chromabits\TutumClient\Cache;
 
-use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Cache\TutumRedisScheduleHelper;
 use Illuminate\Console\Scheduling\Schedule;
+use Tests\Chromabits\Support\LaravelTestCase as TestCase;
 
 /**
  * Class TutumRedisSchedulerHelperTest
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\Tests\TutumClient\Cache
  */
 class TutumRedisSchedulerHelperTest extends TestCase

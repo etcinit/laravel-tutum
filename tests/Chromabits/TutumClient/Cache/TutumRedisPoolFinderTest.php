@@ -1,8 +1,7 @@
 <?php
 
-namespace Chromabits\Tests\TutumClient\Cache;
+namespace Tests\Chromabits\TutumClient\Cache;
 
-use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Cache\TutumRedisPoolFinder;
 use Chromabits\TutumClient\Client;
 use Chromabits\TutumClient\Entities\ContainerLink;
@@ -11,10 +10,12 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Message\Response;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Subscriber\Mock;
+use Tests\Chromabits\Support\LaravelTestCase as TestCase;
 
 /**
  * Class TutumRedisPoolFinderTest
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\Tests\TutumClient\Cache
  */
 class TutumRedisPoolFinderTest extends TestCase
@@ -22,21 +23,19 @@ class TutumRedisPoolFinderTest extends TestCase
     public function testRefresh()
     {
         // Inject mock HTTP client
-        $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
-            $client = new Client('testing', 'testing');
-
-            $client->setHttpClient($this->makeMockClient());
-
-            return $client;
-        });
+        $this->bindMockClient();
 
         $finder = new TutumRedisPoolFinder($this->app, $this->app['cache']);
 
         $finder->refresh();
 
-        $this->assertTrue($this->app['cache']->store('tutumredisconfig')->has('redis_pool'));
+        $this->assertTrue(
+            $this->app['cache']->store('tutumredisconfig')->has('redis_pool')
+        );
 
-        $pool = $this->app['cache']->store('tutumredisconfig')->get('redis_pool');
+        $pool = $this->app['cache']
+            ->store('tutumredisconfig')
+            ->get('redis_pool');
 
         $this->assertEquals(2, count($pool));
 
@@ -50,13 +49,7 @@ class TutumRedisPoolFinderTest extends TestCase
     public function testRefreshWithoutConfig()
     {
         // Inject mock HTTP client
-        $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
-            $client = new Client('testing', 'testing');
-
-            $client->setHttpClient($this->makeMockClient());
-
-            return $client;
-        });
+        $this->bindMockClient();
 
         $this->app['config']->set('tutum.redis', []);
 
@@ -66,18 +59,29 @@ class TutumRedisPoolFinderTest extends TestCase
     }
 
     /**
+     * Inject mock HTTP client
+     */
+    protected function bindMockClient()
+    {
+        $this->app->bind(
+            'Chromabits\TutumClient\Interfaces\ClientInterface',
+            function () {
+                $client = new Client('testing', 'testing');
+
+                $client->setHttpClient($this->makeMockClient());
+
+                return $client;
+            }
+        );
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testRefreshWithoutEnv()
     {
         // Inject mock HTTP client
-        $this->app->bind('Chromabits\TutumClient\Interfaces\ClientInterface', function ($app) {
-            $client = new Client('testing', 'testing');
-
-            $client->setHttpClient($this->makeMockClient());
-
-            return $client;
-        });
+        $this->bindMockClient();
 
         putenv('TUTUM_CONTAINER_API_URL');
 
@@ -86,11 +90,18 @@ class TutumRedisPoolFinderTest extends TestCase
         $finder->refresh();
     }
 
+    /**
+     * Make a mock HTTP client
+     *
+     * @return \GuzzleHttp\Client
+     */
     protected function makeMockClient()
     {
         $client = new HttpClient();
 
-        $responseBody = file_get_contents(base_path() . '/resources/testing/tutumContainerShowResponse.json');
+        $responseBody = file_get_contents(
+            base_path() . '/resources/testing/tutumContainerShowResponse.json'
+        );
 
         $responseStream = Stream::factory($responseBody);
 
@@ -133,7 +144,10 @@ class TutumRedisPoolFinderTest extends TestCase
             'driver' => 'tutum_redis'
         ]);
 
-        putenv('TUTUM_CONTAINER_API_URL=/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640');
+        putenv(
+            'TUTUM_CONTAINER_API_URL='
+            . '/api/v1/container/c1dd4e1e-1356-411c-8613-e15146633640'
+        );
 
         $cacheProvider = new CacheServiceProvider($this->app);
 

@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 /**
  * Class RedisScheduleServiceProvider
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\TutumClient\Providers
  */
 class RedisScheduleServiceProvider extends ServiceProvider
@@ -26,7 +27,9 @@ class RedisScheduleServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $helper = $this->app->make('Chromabits\TutumClient\Cache\TutumRedisScheduleHelper');
+        $helper = $this->app->make(
+            'Chromabits\TutumClient\Cache\TutumRedisScheduleHelper'
+        );
 
         $helper->setup();
     }

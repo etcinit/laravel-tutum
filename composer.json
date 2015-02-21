@@ -2,8 +2,9 @@
     "name": "chromabits/laravel-tutum",
     "description": "Tutum API service for Laravel",
     "require": {
-        "laravel/framework": "5.0.x-dev",
-        "chromabits/tutum-php": "dev-master"
+        "laravel/framework": "~5.0",
+        "chromabits/tutum-php": "dev-master",
+        "predis/predis": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.4",
@@ -22,8 +23,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Chromabits\\Tests\\": "tests/Chromabits/"
+            "Tests\\Chromabits\\Support\\": "tests/Chromabits/Support",
+            "Tests\\Chromabits\\TutumClient\\": "tests/Chromabits/TutumClient"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

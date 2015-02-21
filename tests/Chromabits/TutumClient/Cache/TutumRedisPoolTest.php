@@ -1,17 +1,17 @@
 <?php
 
-namespace Chromabits\Tests\TutumClient\Cache;
+namespace Tests\Chromabits\TutumClient\Cache;
 
-use Chromabits\Tests\Support\LaravelTestCase as TestCase;
 use Chromabits\TutumClient\Cache\TutumRedisPool;
 use Chromabits\TutumClient\Entities\ContainerLink;
-use Chromabits\TutumClient\Providers\CacheServiceProvider;
 use Illuminate\Config\Repository;
 use Illuminate\Foundation\Application;
+use Tests\Chromabits\Support\LaravelTestCase as TestCase;
 
 /**
  * Class TutumRedisPoolTest
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\Tests\TutumClient\Cache
  */
 class TutumRedisPoolTest extends TestCase
@@ -20,7 +20,10 @@ class TutumRedisPoolTest extends TestCase
     {
         $driver = new TutumRedisPool($this->app);
 
-        $this->assertInstanceOf('Chromabits\TutumClient\Cache\TutumRedisPool', $driver);
+        $this->assertInstanceOf(
+            'Chromabits\TutumClient\Cache\TutumRedisPool',
+            $driver
+        );
     }
 
     public function testCreateRedisDriver()
@@ -31,17 +34,10 @@ class TutumRedisPoolTest extends TestCase
 
         $driver = $factory->createRedisDriver([]);
 
-        $this->assertInstanceOf('Illuminate\Cache\Repository', $driver);
-    }
-
-    /**
-     * @expectedException \Exception
-     */
-    public function testCreateRedisDriverWithMissing()
-    {
-        $factory = new TutumRedisPool($this->app);
-
-        $factory->createRedisDriver([]);
+        $this->assertInstanceOf(
+            'Illuminate\Cache\Repository',
+            $driver
+        );
     }
 
     /**
@@ -62,7 +58,18 @@ class TutumRedisPoolTest extends TestCase
         $pool[] = $link1;
         $pool[] = $link2;
 
-        $this->app['cache']->store('tutumredisconfig')->forever('redis_pool', $pool);
+        $this->app['cache']->store('tutumredisconfig')
+            ->forever('redis_pool', $pool);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCreateRedisDriverWithMissing()
+    {
+        $factory = new TutumRedisPool($this->app);
+
+        $factory->createRedisDriver([]);
     }
 
     protected function setUp()
@@ -77,7 +84,7 @@ class TutumRedisPoolTest extends TestCase
     }
 
     /**
-     * Create an barebone Laravel application
+     * Create an barebones Laravel application
      */
     protected function createApplication()
     {

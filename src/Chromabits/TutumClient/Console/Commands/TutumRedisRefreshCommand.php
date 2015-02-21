@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 /**
  * Class TutumRedisRefreshCommand
  *
+ * @author Eduardo Trujillo <ed@chromabits.com>
  * @package Chromabits\TutumClient\Console\Commands
  */
 class TutumRedisRefreshCommand extends Command
@@ -26,7 +27,7 @@ class TutumRedisRefreshCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Refresh available Redis connections from the Tutum API';
+    protected $description = 'Refresh available Redis connections from Tutum';
 
     /**
      * Execute the command
@@ -39,7 +40,8 @@ class TutumRedisRefreshCommand extends Command
 
         $envUtils = new EnvUtils();
 
-        $finder = $this->getLaravel()->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
+        $finder = $this->getLaravel()
+            ->make('Chromabits\TutumClient\Cache\TutumRedisPoolFinder');
 
         $this->line('Container UUID: ' . $envUtils->getContainerUuid());
 
@@ -50,9 +52,10 @@ class TutumRedisRefreshCommand extends Command
             foreach ($links as $link) {
                 $urls = $link->getEndpointsAsUrls();
 
-                foreach ($urls as $url)
-                {
-                    $this->line('Found link: ' . $url->getHost() . ':' . $url->getPort());
+                foreach ($urls as $url) {
+                    $this->line(
+                        'Found link: ' . $url->getHost() . ':' . $url->getPort()
+                    );
                 }
             }
         }
