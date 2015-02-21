@@ -1,6 +1,7 @@
 {
     "name": "chromabits/laravel-tutum",
     "description": "Tutum API service for Laravel",
+    "license": "MIT",
     "require": {
         "laravel/framework": "~5.0",
         "chromabits/tutum-php": "dev-master",
