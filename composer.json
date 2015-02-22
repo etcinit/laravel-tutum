@@ -4,7 +4,7 @@
     "license": "MIT",
     "require": {
         "laravel/framework": "~5.0",
-        "chromabits/tutum-php": "dev-master",
+        "chromabits/tutum-php": "~0.2",
         "predis/predis": "~1.0"
     },
     "require-dev": {
